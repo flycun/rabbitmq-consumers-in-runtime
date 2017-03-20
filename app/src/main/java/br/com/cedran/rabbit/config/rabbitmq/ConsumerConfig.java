@@ -38,7 +38,7 @@ public class ConsumerConfig {
     }
 
     @Bean
-    MessageListenerAdapter listenerAdapter(ImportantMessageListener importantMessageListener) {
+    private MessageListenerAdapter listenerAdapter(ImportantMessageListener importantMessageListener) {
         MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(importantMessageListener, "execute");
         messageListenerAdapter.setMessageConverter(jacksonConverter());
         return messageListenerAdapter;
