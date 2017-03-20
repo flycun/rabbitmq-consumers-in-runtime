@@ -1,5 +1,6 @@
 package br.com.cedran.rabbit.gateway.rabbitmq;
 
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,8 +19,19 @@ public class ImportantMessageListener {
         this.processImportantMessage = processImportantMessage;
     }
 
-    public void execute(ImportantMessage importantMessage) {
+    public void execute1(ImportantMessage importantMessage) {
         try {
+            log.info("Started by SimpleMessageListenerContainer");
+            processImportantMessage.execute(importantMessage);
+        } catch (Exception e) {
+            log.error("Error while processing message {}", e);
+        }
+    }
+
+    @RabbitListener(queues = "importantMessageQueueSimpleRabbit")
+    public void execute2(ImportantMessage importantMessage) {
+        try {
+            log.info("Started by SimpleRabbitListenerContainerFactory");
             processImportantMessage.execute(importantMessage);
         } catch (Exception e) {
             log.error("Error while processing message {}", e);

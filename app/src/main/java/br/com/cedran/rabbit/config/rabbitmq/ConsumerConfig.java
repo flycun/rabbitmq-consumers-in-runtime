@@ -1,5 +1,6 @@
 package br.com.cedran.rabbit.config.rabbitmq;
 
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
@@ -21,13 +22,13 @@ public class ConsumerConfig {
     private Integer maxConcurrentConsumers;
 
     @Bean
-    SimpleMessageListenerContainer listenerContainer(final ConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter) {
+    SimpleMessageListenerContainer simpleMessageListenerContainer(final ConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter) {
         SimpleMessageListenerContainer listenerFactory = new SimpleMessageListenerContainer();
         listenerFactory.setConnectionFactory(connectionFactory);
         listenerFactory.setConcurrentConsumers(concurrentConsumers);
         listenerFactory.setMaxConcurrentConsumers(maxConcurrentConsumers);
         listenerFactory.setMessageListener(listenerAdapter);
-        listenerFactory.setQueueNames("importantMessageQueue");
+        listenerFactory.setQueueNames("importantMessageQueueSimpleMessage");
         return listenerFactory;
     }
 
@@ -39,8 +40,17 @@ public class ConsumerConfig {
 
     @Bean
     MessageListenerAdapter listenerAdapter(ImportantMessageListener importantMessageListener) {
-        MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(importantMessageListener, "execute");
+        MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(importantMessageListener, "execute1");
         messageListenerAdapter.setMessageConverter(jacksonConverter());
         return messageListenerAdapter;
+    }
+
+    @Bean
+    SimpleRabbitListenerContainerFactory simpleRabbitListenerContainer(final ConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter) {
+        SimpleRabbitListenerContainerFactory listenerFactory = new SimpleRabbitListenerContainerFactory();
+        listenerFactory.setConnectionFactory(connectionFactory);
+        listenerFactory.setConcurrentConsumers(concurrentConsumers);
+        listenerFactory.setMaxConcurrentConsumers(maxConcurrentConsumers);
+        return listenerFactory;
     }
 }

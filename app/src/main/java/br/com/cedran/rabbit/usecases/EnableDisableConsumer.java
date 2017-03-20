@@ -23,14 +23,10 @@ public class EnableDisableConsumer {
         LocalTime time = LocalTime.now();
         if (time.getMinute() % 2 == 0) {
             log.info("Starting consumer");
-            if (consumerGateway.isInactive()) {
-                consumerGateway.start();
-            }
+            consumerGateway.startAllConsumers();
         } else {
             log.info("Stoping consumer");
-            if (consumerGateway.isActive()) {
-                consumerGateway.stop();
-            }
+            consumerGateway.stopAllConsumers();
         }
     }
 }

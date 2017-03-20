@@ -2,11 +2,9 @@ package br.com.cedran.rabbit.gateway;
 
 public interface ConsumerGateway {
 
-    boolean isActive();
+    void startAllConsumers();
 
-    boolean isInactive();
+    void start(String queueName);
 
-    void start();
-
-    void stop();
+    void stopAllConsumers();
 }
