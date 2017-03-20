@@ -7,11 +7,11 @@
 ### Important notices:
 
 1. There are two approaches:
-  1. Using the SimpleMessageListenerContainer
-    1. This method is most painful, because you have to configure the SimpleMessageListenerContainer itself plus the listener method (take a look at ImportantMessageListener class), the Jackson2JsonMessageConverter, the MessageListenerAdapter (take a look at ConsumerConfig class)
-    2. Using the SimpleRabbitListenerContainerFactory
+  1.1 Using the SimpleMessageListenerContainer
+    1.1.1 This method is most painful, because you have to configure the SimpleMessageListenerContainer itself plus the listener method (take a look at ImportantMessageListener class), the Jackson2JsonMessageConverter, the MessageListenerAdapter (take a look at ConsumerConfig class)
+    1.1.2. Using the SimpleRabbitListenerContainerFactory
   2. This is the easier one. If you do not intend to configure number of consumers and this kind of stuff, you just have to annotate the listener's method with @RabbitListener (take a look at ImportantMessageListener class)
-    1. If you want to control the number of consumers, etc, you just have to configure the SimpleMessageListenerContainer (take a look at ConsumerConfig class)
+    2.1. If you want to control the number of consumers, etc, you just have to configure the SimpleMessageListenerContainer (take a look at ConsumerConfig class)
 
 2. The JSON expected to be posted in the queues is
 ```json
@@ -24,18 +24,7 @@
 
 ## To run this application, just follow the next steps:
 * Start up the docker-compose (make sure you have it properly started)
-** Open the docker directory and run "docker-compose up"
+  * Open the docker directory and run "docker-compose up"
 * Start up the spring-boot application through the Application class
-
-
-1. Make my changes
-  1. Fix bug
-  2. Improve formatting
-    * Make the headings bigger
-2. Push my commits to GitHub
-3. Open a pull request
-  * Describe my changes
-  * Mention all the members of my team
-    * Ask for feedback
 
 
