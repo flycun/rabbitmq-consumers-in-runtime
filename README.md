@@ -9,8 +9,8 @@
 1. There are two approaches:
   * Using the SimpleMessageListenerContainer
     * This method is most painful, because you have to configure the SimpleMessageListenerContainer itself plus the listener method (take a look at ImportantMessageListener class), the Jackson2JsonMessageConverter, the MessageListenerAdapter (take a look at ConsumerConfig class)
-    * Using the SimpleRabbitListenerContainerFactory
-  * This is the easier one. If you do not intend to configure number of consumers and this kind of stuff, you just have to annotate the listener's method with @RabbitListener (take a look at ImportantMessageListener class)
+  * Using the SimpleRabbitListenerContainerFactory
+    * This is the easier one. If you do not intend to configure number of consumers and this kind of stuff, you just have to annotate the listener's method with @RabbitListener (take a look at ImportantMessageListener class)
     * If you want to control the number of consumers, etc, you just have to configure the SimpleMessageListenerContainer (take a look at ConsumerConfig class)
 
 2. The JSON expected to be posted in the queues is
