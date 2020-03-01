@@ -2,6 +2,7 @@ package br.com.cedran.rabbit.gateway.rabbitmq;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
 
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry;
@@ -17,26 +18,31 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConsumerGatewayImpl implements ConsumerGateway {
 
-    @Autowired
-    private SimpleMessageListenerContainer simpleMessageListenerContainer;
 
     @Autowired
     private RabbitListenerEndpointRegistry rabbitListenerEndpointRegistry;
 
     @Override
     public void startAllConsumers() {
-        simpleMessageListenerContainer.start();
         final Collection<MessageListenerContainer> containers = rabbitListenerEndpointRegistry.getListenerContainers();
-        containers.forEach(Lifecycle::start);
+        Set<String> ids = rabbitListenerEndpointRegistry.getListenerContainerIds();
+        for (String id : ids) {
+            System.out.println(id+"+++++++");
+        }
+
+        for (MessageListenerContainer container : containers) {
+
+            String[] queueNames = ((SimpleMessageListenerContainer) container).getQueueNames();
+            for (int i = 0; i < queueNames.length; i++) {
+                System.out.println("------+++>"+queueNames[i]);
+            }
+        }        containers.forEach(Lifecycle::start);
         log.info("All consumers were started");
     }
 
     @Override
     public void start(String queueName) {
-        if (Arrays.asList(simpleMessageListenerContainer.getQueueNames()).contains(queueName)) {
-            log.info("Staring queue {} from SimpleMessageListenerContainer");
-            simpleMessageListenerContainer.start();
-        }
+
         rabbitListenerEndpointRegistry.getListenerContainers().stream().map(container -> (SimpleMessageListenerContainer) container)
                         .filter(message -> Arrays.asList(message.getQueueNames()).contains(queueName)).forEach(container -> {
                             container.start();
@@ -46,8 +52,13 @@ public class ConsumerGatewayImpl implements ConsumerGateway {
 
     @Override
     public void stopAllConsumers() {
-        simpleMessageListenerContainer.stop();
         final Collection<MessageListenerContainer> containers = rabbitListenerEndpointRegistry.getListenerContainers();
+        for (MessageListenerContainer container : containers) {
+            String[] queueNames = ((SimpleMessageListenerContainer) container).getQueueNames();
+            for (int i = 0; i < queueNames.length; i++) {
+                System.out.println("------>"+queueNames[i]);
+            }
+        }
         containers.forEach(Lifecycle::stop);
         log.info("All consumers were stopped");
     }

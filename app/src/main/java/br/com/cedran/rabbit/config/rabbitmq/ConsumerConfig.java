@@ -1,16 +1,15 @@
 package br.com.cedran.rabbit.config.rabbitmq;
 
+import br.com.cedran.rabbit.model.ImportantMessage;
+import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import br.com.cedran.rabbit.gateway.rabbitmq.ImportantMessageListener;
-import br.com.cedran.rabbit.model.ImportantMessage;
 
 @Configuration
 public class ConsumerConfig {
@@ -18,19 +17,29 @@ public class ConsumerConfig {
     @Value(value = "${concurrentConsumers:1}")
     private Integer concurrentConsumers;
 
-    @Value(value = "${maxConcurrentConsumers:1}")
+    @Value(value = "${maxConcurrentConsumers:2}")
     private Integer maxConcurrentConsumers;
 
     @Bean
-    SimpleMessageListenerContainer simpleMessageListenerContainer(final ConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter) {
-        SimpleMessageListenerContainer listenerFactory = new SimpleMessageListenerContainer();
-        listenerFactory.setConnectionFactory(connectionFactory);
-        listenerFactory.setConcurrentConsumers(concurrentConsumers);
-        listenerFactory.setMaxConcurrentConsumers(maxConcurrentConsumers);
-        listenerFactory.setMessageListener(listenerAdapter);
-        listenerFactory.setQueueNames("importantMessageQueueSimpleMessage");
-        return listenerFactory;
+    public ConnectionFactory connectionFactory() {
+        CachingConnectionFactory factory = new CachingConnectionFactory("172.26.165.28");
+        factory.setUsername("volte1");
+        factory.setPassword("123456");
+        factory.setVirtualHost("volte1");
+        return factory;
     }
+
+    @Bean
+    public ConnectionFactory connectionFactory2() {
+        CachingConnectionFactory factory = new CachingConnectionFactory("172.26.165.28");
+        factory.setUsername("volte2");
+        factory.setPassword("123456");
+        factory.setVirtualHost("/volte2");
+        return factory;
+    }
+
+
+
 
     @Bean
     Jackson2JsonMessageConverter jacksonConverter() {
@@ -38,19 +47,22 @@ public class ConsumerConfig {
         return jacksonConverter;
     }
 
+
     @Bean
-    MessageListenerAdapter listenerAdapter(ImportantMessageListener importantMessageListener) {
-        MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(importantMessageListener, "execute1");
-        messageListenerAdapter.setMessageConverter(jacksonConverter());
-        return messageListenerAdapter;
+    SimpleRabbitListenerContainerFactory simpleRabbitListenerContainer(final ConnectionFactory connectionFactory) {
+        SimpleRabbitListenerContainerFactory listenerFactory = new SimpleRabbitListenerContainerFactory();
+        listenerFactory.setConnectionFactory(connectionFactory);
+        listenerFactory.setConcurrentConsumers(1);
+        listenerFactory.setMaxConcurrentConsumers(1);
+        return listenerFactory;
     }
 
     @Bean
-    SimpleRabbitListenerContainerFactory simpleRabbitListenerContainer(final ConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter) {
+    SimpleRabbitListenerContainerFactory simpleRabbitListenerContainer2(final ConnectionFactory connectionFactory2) {
         SimpleRabbitListenerContainerFactory listenerFactory = new SimpleRabbitListenerContainerFactory();
-        listenerFactory.setConnectionFactory(connectionFactory);
-        listenerFactory.setConcurrentConsumers(concurrentConsumers);
-        listenerFactory.setMaxConcurrentConsumers(maxConcurrentConsumers);
+        listenerFactory.setConnectionFactory(connectionFactory2);
+        listenerFactory.setConcurrentConsumers(2);
+        listenerFactory.setMaxConcurrentConsumers(2);
         return listenerFactory;
     }
 }

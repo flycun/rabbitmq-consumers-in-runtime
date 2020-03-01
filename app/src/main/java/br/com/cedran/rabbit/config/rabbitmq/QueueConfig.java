@@ -1,23 +1,21 @@
 package br.com.cedran.rabbit.config.rabbitmq;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.FanoutExchange;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class QueueConfig {
 
-    @Bean
-    Queue importantMessageQueueSimpleMessage() {
-        return new Queue("importantMessageQueueSimpleMessage", true);
-    }
 
     @Bean
-    Queue importantMessageQueueSimpleRabbit() {
-        return new Queue("importantMessageQueueSimpleRabbit", true);
+    Queue importantMessageQueueSimpleRabbit(AmqpAdmin amqpAdmin, AmqpAdmin amqpAdmin2) {
+        Queue querue = new Queue("importantMessageQueueSimpleRabbit", true);
+        amqpAdmin.declareQueue(querue);
+        amqpAdmin2.declareQueue(querue);
+        return querue;
     }
 
     @Bean
@@ -25,13 +23,19 @@ public class QueueConfig {
         return new FanoutExchange("messageExchange");
     }
 
-    @Bean
-    Binding bindingImportantMessage1(Queue importantMessageQueueSimpleMessage, FanoutExchange messageExchange) {
-        return BindingBuilder.bind(importantMessageQueueSimpleMessage).to(messageExchange);
-    }
 
     @Bean
     Binding bindingImportantMessage2(Queue importantMessageQueueSimpleRabbit, FanoutExchange messageExchange) {
         return BindingBuilder.bind(importantMessageQueueSimpleRabbit).to(messageExchange);
+    }
+
+    @Bean
+    public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
+        return new RabbitAdmin(connectionFactory);
+    }
+
+    @Bean
+    public AmqpAdmin amqpAdmin2(ConnectionFactory connectionFactory2) {
+        return new RabbitAdmin(connectionFactory2);
     }
 }

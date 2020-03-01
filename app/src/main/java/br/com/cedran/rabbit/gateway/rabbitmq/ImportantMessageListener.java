@@ -19,19 +19,21 @@ public class ImportantMessageListener {
         this.processImportantMessage = processImportantMessage;
     }
 
-    public void execute1(ImportantMessage importantMessage) {
+
+    @RabbitListener(queues = "importantMessageQueueSimpleRabbit",id = "a")
+    public void execute(ImportantMessage importantMessage) {
         try {
-            log.info("Started by SimpleMessageListenerContainer");
+            log.info("Started by SimpleRabbitListenerContainerFactory");
             processImportantMessage.execute(importantMessage);
         } catch (Exception e) {
             log.error("Error while processing message {}", e);
         }
     }
 
-    @RabbitListener(queues = "importantMessageQueueSimpleRabbit")
+    @RabbitListener(queues = "importantMessageQueueSimpleRabbit" ,id = "b",containerFactory = "simpleRabbitListenerContainer2")
     public void execute2(ImportantMessage importantMessage) {
         try {
-            log.info("Started by SimpleRabbitListenerContainerFactory");
+            log.info("Started by SimpleRabbitListenerContainerFactory2");
             processImportantMessage.execute(importantMessage);
         } catch (Exception e) {
             log.error("Error while processing message {}", e);
